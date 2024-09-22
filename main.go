@@ -30,6 +30,7 @@ func main() {
 	extractLink(Doc)
 }
 
+// Function gets elements of each link
 func extractLink(node *html.Node) {
 
 	if node.Type == html.ElementNode && node.Data == "a" {
