@@ -7,6 +7,8 @@ import (
 	"golang.org/x/net/html"
 )
 
+var links []string
+
 func main() {
 	url := "https://www.youtube.com/watch?v=1bWOOEhYFdg"
 
@@ -25,5 +27,19 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(Doc)
+	extractLink(Doc)
+}
+
+func extractLink(node *html.Node) {
+
+	if node.Type == html.ElementNode && node.Data == "a" {
+		fmt.Println(node.Data)
+		for _, attr := range node.Attr {
+			fmt.Println(attr.Key)
+		}
+	}
+
+	for htmlnode := node.FirstChild; htmlnode != nil; htmlnode = htmlnode.NextSibling {
+		extractLink(htmlnode)
+	}
 }
