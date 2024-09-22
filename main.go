@@ -3,14 +3,27 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"golang.org/x/net/html"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	name := params.Get("name")
-	fmt.Fprintf(w, "Hello, %s!", name)
-}
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	url := "https://www.youtube.com/watch?v=1bWOOEhYFdg"
+
+	resp, err := http.Get(url)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		panic(fmt.Sprintf("Status diferente de 200: %d", resp.StatusCode))
+	}
+
+	Doc, err := html.Parse(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(Doc)
 }
