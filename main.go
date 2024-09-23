@@ -8,12 +8,24 @@ import (
 	"golang.org/x/net/html"
 )
 
-var links []string
+var (
+	links   []string
+	visited map[string]bool = map[string]bool{}
+)
 
 func main() {
-	url := "https://aprendagolang.com.br"
+	visitedLink("https://aprendagolang.com.br")
 
-	resp, err := http.Get(url)
+	fmt.Println(len(links))
+}
+func visitedLink(link string) {
+	if ok := visited[link]; ok {
+		return
+	}
+	visited[link] = true
+
+	fmt.Println(link)
+	resp, err := http.Get(link)
 
 	if err != nil {
 		panic(err)
@@ -29,8 +41,6 @@ func main() {
 	}
 
 	extractLink(Doc)
-
-	fmt.Println(len(links))
 }
 
 // Function gets elements of each link
@@ -42,10 +52,12 @@ func extractLink(node *html.Node) {
 				continue
 			}
 			link, err := url.Parse(attr.Val)
-			if err != nil {
+			if err != nil || link.Scheme == "" {
 				continue
 			}
 			links = append(links, link.String())
+
+			visitedLink(link.String())
 		}
 	}
 
