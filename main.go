@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"golang.org/x/net/html"
 )
@@ -10,7 +11,7 @@ import (
 var links []string
 
 func main() {
-	url := "https://www.youtube.com/watch?v=1bWOOEhYFdg"
+	url := "https://aprendagolang.com.br"
 
 	resp, err := http.Get(url)
 
@@ -28,15 +29,23 @@ func main() {
 	}
 
 	extractLink(Doc)
+
+	fmt.Println(len(links))
 }
 
 // Function gets elements of each link
 func extractLink(node *html.Node) {
 
 	if node.Type == html.ElementNode && node.Data == "a" {
-		fmt.Println(node.Data)
 		for _, attr := range node.Attr {
-			fmt.Println(attr.Key)
+			if attr.Key != "href" {
+				continue
+			}
+			link, err := url.Parse(attr.Val)
+			if err != nil {
+				continue
+			}
+			links = append(links, link.String())
 		}
 	}
 
